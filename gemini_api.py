@@ -1,7 +1,7 @@
 from langchain_google_genai import ChatGoogleGenerativeAI
 
 
-API_KEY = ""
+API_KEY = "REMOVED_API_KEY"
 
 
 llm = ChatGoogleGenerativeAI(
