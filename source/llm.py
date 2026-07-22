@@ -1,33 +1,39 @@
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_groq import ChatGroq
 from source.retreiver import get_retriever
 from dotenv import load_dotenv
 import os
 
 
 load_dotenv()
+retriever = get_retriever()
 
+llm = ChatGroq(
+    model="llama-3.3-70b-versatile",
+    temperature=0,
+    api_key=os.getenv("GROQ_API_KEY")
+)
 
 def get_answer(question: str):
-
-    # Get FAISS retriever
-    retriever = get_retriever()
 
 
     # Retrieve relevant documents
     documents = retriever.invoke(question)
+    print(len(documents))
+    sources = []
+
+    for doc in documents:
+     sources.append({
+        "title": doc.metadata.get("title"),
+        "source": doc.metadata.get("source"),
+        "page": doc.metadata.get("page"),
+        "total_pages": doc.metadata.get("total_pages")
+    })
 
 
     context = "\n\n".join(
         [doc.page_content for doc in documents]
     )
 
-
-    # Gemini API model
-    llm = ChatGoogleGenerativeAI(
-        model="gemini-flash-latest",
-        temperature=0,
-        google_api_key=os.getenv("GOOGLE_API_KEY")
-    )
 
 
     prompt = f"""
@@ -47,4 +53,7 @@ Answer:
     response = llm.invoke(prompt)
 
 
-    return response.content[0]["text"]
+    return{
+        "answer": response.content,
+        "sources": sources     
+    }
