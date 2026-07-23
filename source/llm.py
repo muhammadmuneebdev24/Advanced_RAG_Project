@@ -15,15 +15,13 @@ llm = ChatGroq(
 
 def get_answer(question: str):
 
-
-    # Retrieve relevant documents
     documents = retriever.invoke(question)
     print(len(documents))
     sources = []
 
     for doc in documents:
      sources.append({
-        "title": doc.metadata.get("title"),
+        "title": doc.metadata.get("chunk_title"),
         "source": doc.metadata.get("source"),
         "page": doc.metadata.get("page"),
         "total_pages": doc.metadata.get("total_pages")
@@ -33,7 +31,6 @@ def get_answer(question: str):
     context = "\n\n".join(
         [doc.page_content for doc in documents]
     )
-
 
 
     prompt = f"""

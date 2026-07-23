@@ -4,7 +4,7 @@ from source.embeddings import get_embeddings
 from source.vector_database import create_vector_db
 
 
-PDF_PATH = "data/ragPDF.pdf"
+PDF_PATH = "data/a.pdf"
 
 
 def main():
