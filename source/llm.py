@@ -1,6 +1,7 @@
 from langchain_groq import ChatGroq
 from source.retreiver import get_retriever
 from dotenv import load_dotenv
+from chunk_filter import filter_chunks
 import os
 
 
@@ -17,6 +18,10 @@ def get_answer(question: str):
 
     documents = retriever.invoke(question)
     print(len(documents))
+
+    documents = filter_chunks(question,documents)
+    print("After Filtering:", len(documents))
+    
     sources = []
 
     for doc in documents:
