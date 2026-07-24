@@ -26,7 +26,6 @@ def main():
 
         for source in answer["sources"]:
 
-            # Unique key = PDF file + page number
             key = (source["source"], source["page"])
 
             if key in seen:
@@ -43,4 +42,3 @@ def main():
 if __name__ == "__main__":
     main()
 
-#hii

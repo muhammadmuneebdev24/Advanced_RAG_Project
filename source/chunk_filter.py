@@ -1,6 +1,36 @@
+def filter_chunks(results, margin=0.03):
+    """
+    Filters retrieved chunks using the best-score + margin approach.
 
-def filter_chunks(question, documents):
+    Parameters:
+        results : List of (Document, score) tuples returned by
+                  similarity_search_with_score().
+        margin  : How far from the best score a chunk can be and still be kept.
+
+    Returns:
+        List of Document objects.
+    """
+
+    if not results:
+        return []
+
+    results = sorted(results, key=lambda x: x[1])
+
+    best_score = results[0][1]
+
+    print(f"Best Score: {best_score}")
+
+    filtered_documents = []
+
+    for doc, score in results:
+
+        print(score)
+
+        if score <= best_score + margin:
+            filtered_documents.append(doc)
 
 
-        
-        return documents
+    if not filtered_documents:
+        filtered_documents.append(results[0][0])
+
+    return filtered_documents

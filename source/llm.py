@@ -1,12 +1,11 @@
 from langchain_groq import ChatGroq
-from source.retreiver import get_retriever
+from source.retreiver import retrieve_chunks
 from dotenv import load_dotenv
-from chunk_filter import filter_chunks
+from source.chunk_filter import filter_chunks
 import os
 
 
 load_dotenv()
-retriever = get_retriever()
 
 llm = ChatGroq(
     model="llama-3.3-70b-versatile",
@@ -16,12 +15,12 @@ llm = ChatGroq(
 
 def get_answer(question: str):
 
-    documents = retriever.invoke(question)
-    print(len(documents))
+    results = retrieve_chunks(question)
+ #   print(results)
 
-    documents = filter_chunks(question,documents)
+    documents = filter_chunks(results)
     print("After Filtering:", len(documents))
-    
+
     sources = []
 
     for doc in documents:
@@ -39,8 +38,18 @@ def get_answer(question: str):
 
 
     prompt = f"""
-You are a helpful assistant.
-Answer the question only using the provided context.
+You are an intelligent and accurate PDF Question Answering Assistant.
+
+Your task is to answer the user's question using ONLY the information provided in the context below.
+
+Instructions:
+1. Read the context carefully before answering.
+2. Use only the provided context to answer the question.
+3. Do NOT use your own knowledge or make assumptions.
+4. If the answer is not clearly present in the context, reply exactly:
+   "The requested information is not available in the provided document."
+5. If multiple pieces of context are relevant, combine them into a single clear answer.
+6. Keep the answer concise, accurate, and well-structured.
 
 Context:
 {context}

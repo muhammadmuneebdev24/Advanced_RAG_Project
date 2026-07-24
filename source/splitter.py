@@ -44,7 +44,7 @@ def get_chunk_title(text: str):
         ):
            clean_title = re.sub(r"^\d+(\.\d+)*\.?\s+", "", line)
            return clean_title
-        
+      
     
     first = re.sub(r"^\d+(\.\d+)*\.?\s+", "", lines[0])
     if len(first) > 70:
