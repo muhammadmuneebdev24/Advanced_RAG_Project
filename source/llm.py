@@ -44,12 +44,11 @@ Your task is to answer the user's question using ONLY the information provided i
 
 Instructions:
 1. Read the context carefully before answering.
-2. Use only the provided context to answer the question.
-3. Do NOT use your own knowledge or make assumptions.
-4. If the answer is not clearly present in the context, reply exactly:
+2. Do NOT use your own knowledge or make assumptions.
+3. If the answer is not clearly present in the context, reply exactly:
    "The requested information is not available in the provided document."
-5. If multiple pieces of context are relevant, combine them into a single clear answer.
-6. Keep the answer concise, accurate, and well-structured.
+4. If multiple pieces of context are relevant, combine them into a single clear answer.
+5. Keep the answer concise, accurate, and well-structured.
 
 Context:
 {context}

@@ -1,4 +1,4 @@
-def filter_chunks(results, margin=0.03):
+def filter_chunks(results, margin=0.15,threshold = 1.7):
     """
     Filters retrieved chunks using the best-score + margin approach.
 
@@ -20,6 +20,9 @@ def filter_chunks(results, margin=0.03):
 
     print(f"Best Score: {best_score}")
 
+    if best_score > threshold:
+     return []
+
     filtered_documents = []
 
     for doc, score in results:
@@ -29,8 +32,5 @@ def filter_chunks(results, margin=0.03):
         if score <= best_score + margin:
             filtered_documents.append(doc)
 
-
-    if not filtered_documents:
-        filtered_documents.append(results[0][0])
 
     return filtered_documents
