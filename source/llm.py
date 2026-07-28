@@ -2,6 +2,7 @@ from langchain_groq import ChatGroq
 from source.retreiver import get_retriever
 from dotenv import load_dotenv
 from source.reranker import rerank_chunks
+from source.filtering import filter_reranked_chunks
 import os
 
 
@@ -18,11 +19,19 @@ def get_answer(question: str):
 
     documents = retriever.invoke(question)
     print(f"Retrieved {len(documents)} chunks")
-
+    
     ranked_results = rerank_chunks(question, documents)
+    filtered_results = filter_reranked_chunks(ranked_results)
+    print([(doc.metadata.get("heading"),doc.metadata.get("page"), score) for doc, score in ranked_results[:5]])
 
-    # Keep only the top 5 chunks
-    documents = [doc for doc, score in ranked_results[:3]]
+
+    if not filtered_results:
+      return {
+        "answer": "I couldn't find this information in the provided document.",
+        "sources": []
+    }
+
+    documents = [doc for doc, score in filtered_results]
 
     sources = []
 
@@ -64,10 +73,9 @@ Question:
 Answer:
 """
 
-
     response = llm.invoke(prompt)
 
-    print([(doc.metadata.get("heading"), score) for doc, score in ranked_results[:3]])
+    print([(doc.metadata.get("heading"), score) for doc, score in ranked_results[:5]])
 
     return{
         "answer": response.content,
