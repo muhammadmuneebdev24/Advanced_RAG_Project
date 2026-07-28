@@ -1,15 +1,5 @@
-from langchain_community.document_loaders import PyPDFLoader
-# hello world
+import fitz
 
 def load_pdf(pdf_path: str):
-
-    """
-    Load a PDF file and return its contents
-    as LangChain Document objects.
-    """
-
-    loader = PyPDFLoader(pdf_path)
-
-    documents = loader.load()
-
-    return documents
+    doc = fitz.open(pdf_path)
+    return doc

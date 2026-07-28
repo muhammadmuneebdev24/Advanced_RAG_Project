@@ -3,12 +3,13 @@ import unicodedata
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 
-def clean_text(text: str) -> str:
+def clean_text(text: str):
+    """
+    Clean extracted PDF text before chunking.
+    """
 
-    # Normalize unicode characters
     text = unicodedata.normalize("NFKC", text)
 
-    
     text = text.replace("\t", " ")
 
     text = re.sub(r"[ ]{2,}", " ", text)
@@ -20,51 +21,27 @@ def clean_text(text: str) -> str:
     return text.strip()
 
 
-def get_chunk_title(text: str):
+def text_splitter(sections):
     """
-    Returns the best title for a chunk.
-
-    Priority:
-    1. Short standalone headings
-    2. First meaningful line
+    Split section Documents into chunks while
+    preserving metadata.
     """
 
-    lines = [line.strip() for line in text.splitlines() if line.strip()]
-
-    if not lines:
-        return "Untitled"
-
-    for line in lines:
-
-        if (
-            len(line) <= 80
-            and len(line.split()) <= 10
-            and not line.endswith(".")
-            and not line.startswith("-")
-        ):
-           clean_title = re.sub(r"^\d+(\.\d+)*\.?\s+", "", line)
-           return clean_title
-        
-    
-    first = re.sub(r"^\d+(\.\d+)*\.?\s+", "", lines[0])
-    if len(first) > 70:
-        return first[:70] + "..."
-
-    return first
-
-def text_splitter(documents):
-    for doc in documents:
-        doc.page_content = clean_text(doc.page_content)
+    for section in sections:
+        section.page_content = clean_text(section.page_content)
 
     splitter = RecursiveCharacterTextSplitter(
-        chunk_size=1000,
-        chunk_overlap=150
+        chunk_size=500,
+        chunk_overlap=150,
+        separators=[
+            "\n\n",
+            "\n",
+            ". ",
+            " ",
+            ""
+        ]
     )
 
-    chunks = splitter.split_documents(documents)
-
-    for chunk in chunks:
-      chunk.metadata["chunk_title"] = get_chunk_title(chunk.page_content)
-
+    chunks = splitter.split_documents(sections)
 
     return chunks

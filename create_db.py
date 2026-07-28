@@ -1,6 +1,7 @@
 from source.loader import load_pdf
 from source.splitter import text_splitter
 from source.embeddings import get_embeddings
+from source.section_parser import build_sections
 from source.vector_database import create_vector_db
 
 
@@ -10,10 +11,13 @@ PDF_PATH = "data/a.pdf"
 def main():
 
     print("Loading PDF...")
-    documents = load_pdf(PDF_PATH)
+    pdf= load_pdf(PDF_PATH)
+
+    print("Building sections...")
+    sections = build_sections(pdf)
 
     print("Splitting text...")
-    chunks = text_splitter(documents)
+    chunks = text_splitter(sections)
 
     print("Loading embeddings...")
     embeddings = get_embeddings()

@@ -14,32 +14,21 @@ def main():
             print("Goodbye!")
             break
 
-        answer = get_answer(question)
+        result = get_answer(question)
 
         print("\nAnswer:")
-        print("--------------------")
-        print(answer["answer"])
+        print("-" * 60)
+        print(result["answer"])
 
-        print("\nSources:")
+        print("\nReferences:")
+        print("-" * 60)
 
-        seen = set()
+        for source in result["sources"]:
 
-        for source in answer["sources"]:
-
-            # Unique key = PDF file + page number
-            key = (source["source"], source["page"])
-
-            if key in seen:
-                continue
-
-            seen.add(key)
-
-            print(f"Title : {source['title']}")
-            print(f"File  : {source['source']}")
-            print(f"Page  : {source['page'] + 1}/{source['total_pages']}")
+            print(f"Heading : {source['heading']}")
+            print(f"Page    : {source['page'] + 1}")
             print()
 
 
 if __name__ == "__main__":
     main()
-
