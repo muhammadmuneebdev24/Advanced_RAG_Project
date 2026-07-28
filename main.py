@@ -34,7 +34,7 @@ def main():
 
             seen.add(key)
 
-            print(f"Title : {source['title']}")
+            print(f"Heading : {source['heading']}")
             print(f"File  : {source['source']}")
             print(f"Page  : {source['page'] + 1}/{source['total_pages']}")
             print()
