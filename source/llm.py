@@ -1,11 +1,13 @@
 from langchain_groq import ChatGroq
-from source.retreiver import retrieve_chunks
+from source.retreiver import get_retriever
 from dotenv import load_dotenv
-from source.chunk_filter import filter_chunks
+from source.reranker import rerank_chunks
+from source.filtering import filter_reranked_chunks
 import os
 
 
 load_dotenv()
+retriever = get_retriever()
 
 llm = ChatGroq(
     model="llama-3.3-70b-versatile",
@@ -15,40 +17,56 @@ llm = ChatGroq(
 
 def get_answer(question: str):
 
-    results = retrieve_chunks(question)
- #   print(results)
+    documents = retriever.invoke(question)
+    print(f"Retrieved {len(documents)} chunks")
+    
+    ranked_results = rerank_chunks(question, documents)
+    filtered_results = filter_reranked_chunks(ranked_results)
+    print(len(filtered_results))
+    print([(doc.metadata.get("heading"),doc.metadata.get("page"), score, doc.page_content) for doc, score in ranked_results[:5]])
 
-    documents = filter_chunks(results)
-    print("After Filtering:", len(documents))
+
+
+
+    if not filtered_results:
+      return {
+        "answer": "I couldn't find this information in the provided document.",
+        "sources": []
+    }
+
+    documents = [doc for doc, score in filtered_results]
 
     sources = []
 
     for doc in documents:
      sources.append({
-        "title": doc.metadata.get("chunk_title"),
+        "heading": doc.metadata.get("heading", "Untitled"),
         "source": doc.metadata.get("source"),
         "page": doc.metadata.get("page"),
         "total_pages": doc.metadata.get("total_pages")
     })
 
-
     context = "\n\n".join(
-        [doc.page_content for doc in documents]
+    f"## {doc.metadata.get('heading', 'Untitled')}\n{doc.page_content}"
+    for doc in documents
     )
+   
 
 
     prompt = f"""
-You are an intelligent and accurate PDF Question Answering Assistant.
+You are an expert document question-answering assistant.
 
-Your task is to answer the user's question using ONLY the information provided in the context below.
+Answer the user's question using ONLY the provided context.
 
 Instructions:
-1. Read the context carefully before answering.
-2. Do NOT use your own knowledge or make assumptions.
-3. If the answer is not clearly present in the context, reply exactly:
-   "The requested information is not available in the provided document."
-4. If multiple pieces of context are relevant, combine them into a single clear answer.
-5. Keep the answer concise, accurate, and well-structured.
+- Read the entire provided context before answering.
+- Include ALL information from the context that directly answers the question.
+- Do not shorten, summarize, or omit relevant details.
+- If multiple sentences in the context answer the question, combine them into one complete answer.
+- Do not use outside knowledge.
+- If the answer is not present in the context, reply exactly:
+"I couldn't find this information in the provided document."
+
 
 Context:
 {context}
@@ -59,9 +77,9 @@ Question:
 Answer:
 """
 
-
     response = llm.invoke(prompt)
 
+    print([(doc.metadata.get("heading"), score) for doc, score in ranked_results[:5]])
 
     return{
         "answer": response.content,

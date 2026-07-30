@@ -2,7 +2,7 @@ from langchain_community.vectorstores import FAISS
 from source.embeddings import get_embeddings
 
 
-def retrieve_chunks(question):
+def get_retriever():
 
     embeddings = get_embeddings()
 
@@ -11,10 +11,12 @@ def retrieve_chunks(question):
         embeddings,
         allow_dangerous_deserialization=True
     )
-    
-    results = vector_db.similarity_search_with_score(
-    query=question,
-    k=4
+
+    retriever = vector_db.as_retriever(
+        search_type="similarity",
+        search_kwargs={
+            "k": 20 
+        }
     )
 
-    return results
+    return retriever

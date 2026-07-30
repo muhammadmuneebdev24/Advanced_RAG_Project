@@ -1,5 +1,4 @@
 from langchain_community.document_loaders import PyPDFLoader
-# hello world
 
 def load_pdf(pdf_path: str):
 
