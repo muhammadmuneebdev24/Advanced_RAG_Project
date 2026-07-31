@@ -1,5 +1,4 @@
 import os
-
 from source.loader import load_pdf
 from source.splitter import text_splitter
 from source.embeddings import get_embeddings

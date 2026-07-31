@@ -13,7 +13,20 @@ sentence-transformers
 transformers
 torch == 2.5.1
 
-python-dotenv
 
 google-generativeai
+
+
+langchain-text-splitters
+
+langchain-groq
+
+
+PyMuPDF
+
+python-dotenv
+
+numpy
+
+huggingface-hub
 
