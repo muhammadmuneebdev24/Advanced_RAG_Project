@@ -26,5 +26,4 @@ def load_vector_db(embeddings):
 
     return db
     
-    print("Loaded successfully")
 
